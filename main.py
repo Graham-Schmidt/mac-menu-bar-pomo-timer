@@ -6,7 +6,7 @@ class PomoTimerApp(rumps.App):
         super(PomoTimerApp, self).__init__("PoMo")
         self.menu = ["Start", "Stop", "Settings", "Skip"]
         self.work_min = 25
-        self.break_min = 5
+        self.break_min = 1
         self.timer = rumps.Timer(self.tick, 1)
         self.seconds_left = self.work_min * 60
         self.on_break = False
@@ -29,7 +29,7 @@ class PomoTimerApp(rumps.App):
             self.running = False
             self.timer.stop()
             self.title = "PoMo"
-            self.menu["Settings"].set_callback(self.settings)
+            self.enable_settings()
 
     @rumps.clicked("Settings")
     def settings(self, _):
@@ -67,16 +67,36 @@ class PomoTimerApp(rumps.App):
             self.running = False
             self.title = "PoMo"
             self.swap_break_status()
-            rumps.notification(
-                title="PoMo",
-                subtitle="Work session complete",
-                message="Time for a break!",
-                sound=True,
-            )
-            self.menu["Settings"].set_callback(self.settings)
+            if self.on_break:
+                self.notify_break_end()
+            else:
+                self.notify_work_end()
+            self.enable_settings()
 
     def swap_break_status(self):
         self.on_break = not self.on_break
+
+    def notify_work_end(self):
+        rumps.notification(
+            title="PoMo",
+            subtitle="Work session complete",
+            message="Time for a break!",
+            sound=True,
+        )
+        self.enable_settings()
+
+    def notify_break_end(self):
+        rumps.notification(
+            title="PoMo",
+            subtitle="Break session complete",
+            message="Time for work!",
+            sound=True,
+        )
+        self.enable_settings()
+
+    def enable_settings(self):
+        self.menu["Settings"].set_callback(self.settings)
+
 
 
 # TODO build standalone "Skip" menu item, insert only after start(), change name
