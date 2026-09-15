@@ -5,7 +5,7 @@ from rumps.notifications import notify
 class PomoTimerApp(rumps.App):
     def __init__(self):
         super(PomoTimerApp, self).__init__("PoMo")
-        self.menu = ["Start", "Stop", "Settings", "Test"]
+        self.menu = ["Start", "Stop", "Settings"]
         self.work_min = 25
         self.break_min = 5
         self.timer = rumps.Timer(self.tick, 1)
@@ -63,6 +63,7 @@ class PomoTimerApp(rumps.App):
                 message="Time for a break!",
                 sound=True,
             )
+            self.menu["Settings"].set_callback(self.settings)
 
 
 if __name__ == "__main__":
