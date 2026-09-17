@@ -1,5 +1,5 @@
 import rumps
-
+rumps.debug_mode(True)
 
 class PomoTimerApp(rumps.App):
     def __init__(self):
@@ -68,11 +68,11 @@ class PomoTimerApp(rumps.App):
             self.timer.stop()
             self.running = False
             self.title = "PoMo"
-            self.swap_break_status()
             if self.on_break:
                 self.notify_break_end()
             else:
                 self.notify_work_end()
+            self.swap_break_status()
             self.enable_settings()
 
     def swap_break_status(self):
