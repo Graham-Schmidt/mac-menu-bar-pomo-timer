@@ -1,0 +1,9 @@
+# py2app
+/build
+/dist
+
+# python
+/venv
+
+# MacOS
+.DS_store

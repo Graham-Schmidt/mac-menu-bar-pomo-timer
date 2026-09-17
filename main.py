@@ -4,9 +4,9 @@ import rumps
 class PomoTimerApp(rumps.App):
     def __init__(self):
         super(PomoTimerApp, self).__init__("PoMo")
-        self.menu = ["Start", "Stop", "Settings", "Skip"]
+        self.menu = ["Start", "Stop", "Settings"]
         self.work_min = 25
-        self.break_min = 1
+        self.break_min = 5
         self.timer = rumps.Timer(self.tick, 1)
         self.seconds_left = self.work_min * 60
         self.on_break = False
@@ -22,6 +22,8 @@ class PomoTimerApp(rumps.App):
             self.running = True
             self.timer.start()
             self.menu["Settings"].set_callback(None)
+            self.add_skip_menu_item()
+            self.set_skip_label()
 
     @rumps.clicked("Stop")
     def stop(self, _):
@@ -49,16 +51,16 @@ class PomoTimerApp(rumps.App):
                 self.work_min = 50
                 self.break_min = 10
                 self.seconds_left = 50 * 60
-
-    @rumps.clicked("Skip")
+    
     def skip(self, _):
         if self.on_break:
             self.menu["Skip"].title = "Skip Break"
         else:
             self.menu["Skip"].title = "Skip Work"
         self.stop(None)
+        self.remove_skip_menu_item()
         self.swap_break_status()
-
+    
     def tick(self, timer):
         self.seconds_left -= 1
         self.title = f"{self.seconds_left // 60:02d}:{self.seconds_left % 60:02d}"
@@ -97,7 +99,27 @@ class PomoTimerApp(rumps.App):
     def enable_settings(self):
         self.menu["Settings"].set_callback(self.settings)
 
+    def set_skip_label(self):
+        if self.on_break:
+            self.menu["Skip"].title = "Skip Break"
+        else:
+            self.menu["Skip"].title = "Skip Work"
 
+    def add_skip_menu_item(self):
+        self.menu.insert_before("Settings", self.skip_menu)
+
+    def remove_skip_menu_item(self):
+        if "Skip Break" in self.menu.keys():
+            self.menu.pop("Skip Break")
+        # elif "Skip Work" in self.menu.keys():
+        else:
+            print(self)
+            self.menu.pop("Skip Work")
+
+    skip_menu = rumps.MenuItem(
+        title="Skip",
+        callback=skip
+        )
 
 # TODO build standalone "Skip" menu item, insert only after start(), change name
 
